@@ -51,6 +51,7 @@ class Program
 
 class GameManager
 {
+    // Количество раундов
     public int roundsCount = 5;
 
     public Player player = new Player();
@@ -61,6 +62,7 @@ class GameManager
         while (true)
         {
             player.currentHealth = player.maxHealth;
+            player.attack = player.basicAttack;
             if (WaitForValidKey() == 1)
             {
                 Console.WriteLine($"\nИгра началась! Выберите дверь");
@@ -110,28 +112,20 @@ class GameManager
     {
         int abilityIndex = WaitForValidKey() - 1;
 
-        //Todo Применение заклинания хила (костыль)
-        if (abilityIndex == 2 && abilityIndex < player.Abilities.Count)
+        if (player.Abilities[abilityIndex] is Spell)
         {
             if (player.Abilities[abilityIndex].cooldown <= 0)
             {
-                player.Abilities[abilityIndex].Use(player.attack, player);
-                player.Abilities[abilityIndex].cooldown = player.Abilities[abilityIndex].maxCooldown;
-            }
-            else
-            {
-                Console.WriteLine(
-                    $"\nЗаклинание не готово попробуйте через {player.Abilities[abilityIndex].cooldown} хода!");
-                CastSpell();
-            }
-        }
-        // Применение заклинания
-        else if (abilityIndex >= 0 && abilityIndex < player.Abilities.Count)
-        {
-            if (player.Abilities[abilityIndex].cooldown <= 0)
-            {
-                player.Abilities[abilityIndex].Use(player.attack, monster);
-                player.Abilities[abilityIndex].cooldown = player.Abilities[abilityIndex].maxCooldown;
+                if (player.Abilities[abilityIndex] is Heal)
+                {
+                    player.Abilities[abilityIndex].Use(player.attack, player);
+                    player.Abilities[abilityIndex].cooldown = player.Abilities[abilityIndex].maxCooldown;
+                }
+                else
+                {
+                    player.Abilities[abilityIndex].Use(player.attack, monster);
+                    player.Abilities[abilityIndex].cooldown = player.Abilities[abilityIndex].maxCooldown;
+                }
             }
             else
             {
@@ -217,6 +211,8 @@ class GameManager
         //todo Добавить метод который "сбрасывает" эфекты дебафа
         monster.isFrozen = false;
         monster.attack = monster.maxAttack;
+        //todo Сделать нормальную проверку на смерть игрока
+        player.Die();
     }
 
     public void UpdateCooldown()
