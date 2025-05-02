@@ -12,10 +12,10 @@ class Program
         game.StartGame();
 
         // Количество монстров зависит от количества раундов
-        for (int i = 0; i < game.roundsCount;)
+        for (int i = 0; i < game.RoundsCount;)
         {
             // Выбираем дверь и спавним нового монстра
-            if (!game.monster.IsAlive)
+            if (!game.Monster.IsAlive)
             {
                 game.ChooseTreDoor();
                 game.SpawnMonster();
@@ -32,15 +32,15 @@ class Program
             game.UpdateCooldown();
 
             // Если монстр умирает переходим к следующему
-            if (!game.monster.IsAlive) continue;
+            if (!game.Monster.IsAlive) continue;
 
             // Атакует монстр
             game.AttackMonster();
-            Console.WriteLine($"Твое здоровье - {game.player.currentHealth}");
-            Console.WriteLine($"Здоровье противника - {game.monster.currentHealth}");
+            Console.WriteLine($"Твое здоровье - {game.Player.currentHealth}");
+            Console.WriteLine($"Здоровье противника - {game.Monster.currentHealth}");
 
             // Если игрок мёртв игра завершается
-            if (!game.player.isAlive) game.GameOver();
+            if (!game.Player.isAlive) game.GameOver();
         }
 
         // Если цикл завершился то игра закончена
@@ -52,17 +52,17 @@ class Program
 class GameManager
 {
     // Количество раундов
-    public int roundsCount = 5;
+    public int RoundsCount = 5;
 
-    public Player player = new Player();
-    public Monster monster = new Monster();
-
+    public Player Player = new Player();
+    public Monster Monster = DB.GetRandomMonster();
+    
     public void StartGame()
     {
         while (true)
         {
-            player.currentHealth = player.maxHealth;
-            player.attack = player.basicAttack;
+            Player.currentHealth = Player.maxHealth;
+            Player.attack = Player.basicAttack;
             if (WaitForValidKey() == 1)
             {
                 Console.WriteLine($"\nИгра началась! Выберите дверь");
@@ -101,7 +101,7 @@ class GameManager
     {
         // Выводим список доступных действий
         int index = 1;
-        foreach (var playerAbility in player.Abilities)
+        foreach (var playerAbility in Player.Abilities)
         {
             Console.WriteLine($"{index}. {playerAbility.description}");
             index++;
@@ -112,25 +112,25 @@ class GameManager
     {
         int abilityIndex = WaitForValidKey() - 1;
 
-        if (player.Abilities[abilityIndex] is Spell)
+        if (Player.Abilities[abilityIndex] is Spell)
         {
-            if (player.Abilities[abilityIndex].cooldown <= 0)
+            if (Player.Abilities[abilityIndex].cooldown <= 0)
             {
-                if (player.Abilities[abilityIndex] is Heal)
+                if (Player.Abilities[abilityIndex] is Heal)
                 {
-                    player.Abilities[abilityIndex].Use(player.attack, player);
-                    player.Abilities[abilityIndex].cooldown = player.Abilities[abilityIndex].maxCooldown;
+                    Player.Abilities[abilityIndex].Use(Player.attack, Player);
+                    Player.Abilities[abilityIndex].cooldown = Player.Abilities[abilityIndex].maxCooldown;
                 }
                 else
                 {
-                    player.Abilities[abilityIndex].Use(player.attack, monster);
-                    player.Abilities[abilityIndex].cooldown = player.Abilities[abilityIndex].maxCooldown;
+                    Player.Abilities[abilityIndex].Use(Player.attack, Monster);
+                    Player.Abilities[abilityIndex].cooldown = Player.Abilities[abilityIndex].maxCooldown;
                 }
             }
             else
             {
                 Console.WriteLine(
-                    $"\nЗаклинание не готово попробуйте через {player.Abilities[abilityIndex].cooldown} хода!");
+                    $"\nЗаклинание не готово попробуйте через {Player.Abilities[abilityIndex].cooldown} хода!");
                 CastSpell();
             }
         }
@@ -175,49 +175,44 @@ class GameManager
 
     public void SpawnMonster()
     {
-        monster.IsAlive = true;
-        monster.currentHealth = monster.maxHealth;
-        monster.attack = monster.originalAttack;
-        Random rnd = new Random();
-        int index = rnd.Next(Monster.AllMonstersNames.Length);
-        monster.name = Monster.AllMonstersNames[index];
-        Console.WriteLine($"\nНа твоем пути {monster.name}, который готов напасть. Нанеси первый удар!");
+        DB.GetRandomMonster();
+        Console.WriteLine($"\nНа твоем пути {Monster.name}, который готов напасть. Нанеси первый удар!");
     }
 
     public void AttackMonster()
     {
         // Применяет дебафы из списка, если они есть
-        foreach (var debuff in monster.Debuffs)
+        foreach (var debuff in Monster.Debuffs)
         {
-            debuff.ApplyDebuff(monster);
+            debuff.ApplyDebuff(Monster);
         }
 
         // Очищаем список дебаффов после применения
-        monster.Debuffs.Clear();
+        Monster.Debuffs.Clear();
 
         // Если монстр жив и не заморожен, проверяет на промах, наносит аттаку игроку
-        if (monster.IsAlive && !monster.isFrozen)
+        if (Monster.IsAlive && !Monster.isFrozen)
         {
             Random rnd = new Random();
             int randomNumber = rnd.Next(1, 100);
-            if (randomNumber <= player.evasion) Console.WriteLine($"\n{monster.name} промахнулся! Лох");
+            if (randomNumber <= Player.evasion) Console.WriteLine($"\n{Monster.name} промахнулся! Лох");
             else
             {
-                player.currentHealth -= monster.attack;
-                Console.WriteLine($"{monster.name} наносит {monster.attack} урона!");
+                Player.currentHealth -= Monster.attack;
+                Console.WriteLine($"{Monster.name} наносит {Monster.attack} урона!");
             }
         }
 
         //todo Добавить метод который "сбрасывает" эфекты дебафа
-        monster.isFrozen = false;
-        monster.attack = monster.maxAttack;
+        Monster.isFrozen = false;
+        Monster.attack = Monster.BaseAttack;
         //todo Сделать нормальную проверку на смерть игрока
-        player.Die();
+        Player.Die();
     }
 
     public void UpdateCooldown()
     {
-        foreach (var playerAbility in player.Abilities)
+        foreach (var playerAbility in Player.Abilities)
         {
             playerAbility.cooldown -= 1;
         }

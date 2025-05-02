@@ -14,10 +14,11 @@ public class Player : ITarget
     public string name { get; set; } = "Стиви";
     public int maxHealth { get; set; } = 100;
     public int currentHealth { get; set; }
-    public int attack { get; set; } = 5;
+    public int basicAttack = 5;
+    public int evasion = 10;
+    public int attack { get; set; }
     public bool isAlive = true;
     public bool isFrozen { get; set; } = false;
-    public int evasion = 10;
 
     public List<IAbility> Abilities =
     [
@@ -39,8 +40,15 @@ public class Player : ITarget
 
 public class Monster : ITarget
 {
+    public Monster(string name, int maxHealth, int baseAttack, List<string>? resistances = null)
+    {
+        this.name = name;
+        this.maxHealth = maxHealth;
+        this.BaseAttack = baseAttack;
+        this.Resistances = resistances ?? []; 
+    } 
     public string name { get; set; }
-    public int maxHealth { get; set; } = 100;
+    public int maxHealth { get; set; }
     private int _currentHealth;
     public int currentHealth
     {
@@ -51,21 +59,11 @@ public class Monster : ITarget
             if (_currentHealth <= 0) Die();
         }
     }
-
+    public int BaseAttack;
     public int attack { get; set; } = 10;
-    public int maxAttack = 10;
-    public int originalAttack = 10;
     public bool IsAlive = false;
     public bool isFrozen { get; set; } = false;
-
-    public static string[] AllMonstersNames =
-    {
-        "Паук",
-        "Скелет",
-        "Дракон",
-        "Призрак",
-        "Ядовитый плющ"
-    };
+    public List<string> Resistances = [];
 
     public List<IDebuff> Debuffs { get; } = new List<IDebuff>();
 
@@ -73,9 +71,6 @@ public class Monster : ITarget
     {
         Console.Write($"{name} погиб!");
         IsAlive = false;
+        DB.RemoveMonster(this);
     }
-}
-
-public class Boss : Monster
-{
 }
