@@ -61,7 +61,7 @@ public class Monster : ITarget
         }
     }
     public int BaseAttack;
-    public int attack { get; set; } = 10;
+    public int attack { get; set; }
     public bool IsAlive = true;
     public bool isFrozen { get; set; } = false;
     public List<string> Resistances = [];
