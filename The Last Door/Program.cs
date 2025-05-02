@@ -11,6 +11,9 @@ class Program
         Console.WriteLine($"Добро пожаловать в игру \"Последняя дверь\" \nДля старта нажмите 1");
         game.StartGame();
 
+        //Чтобы выбрать дверь убиваем начального монстра
+        game.Monster.IsAlive = false;
+        
         // Количество монстров зависит от количества раундов
         for (int i = 0; i < game.RoundsCount;)
         {
@@ -43,7 +46,7 @@ class Program
             if (!game.Player.isAlive) game.GameOver();
         }
 
-        // Если цикл завершился то игра закончена
+        // Если цикл завершился, то игра закончена
         Console.WriteLine("Вы победили!");
         game.GameOver();
     }
@@ -142,15 +145,8 @@ class GameManager
 
     public void ChooseTreDoor()
     {
-        string[] allDoors =
-        {
-            "Красная",
-            "Синяя",
-            "Зеленая",
-            "Желтая",
-            "Фиолетовая",
-            "Белая"
-        };
+        string[] allDoors = DB.AllDoors;
+        
         List<int> doors = [];
         Random random = new Random();
 
@@ -175,7 +171,7 @@ class GameManager
 
     public void SpawnMonster()
     {
-        DB.GetRandomMonster();
+        Monster = DB.GetRandomMonster();
         Console.WriteLine($"\nНа твоем пути {Monster.name}, который готов напасть. Нанеси первый удар!");
     }
 

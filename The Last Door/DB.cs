@@ -26,6 +26,15 @@ public class DB
         new Monster("Песчаный червь", 150, 21, new List<string> { "fire", "earth" })
     };
     
+    public static string[] AllDoors = {
+        "Красная",
+        "Синяя",
+        "Зеленая",
+        "Желтая",
+        "Фиолетовая",
+        "Белая"
+    };
+    
     public static Monster? GetRandomMonster()
     {
         if (Monsters.Count == 0) return null;

@@ -32,7 +32,7 @@ public class Player : ITarget
     {
         if (currentHealth <= 0)
         {
-            Console.Write("Вы мертвы");
+            Console.WriteLine("\nВы мертвы");
             isAlive = false;
         }
     }
@@ -44,6 +44,7 @@ public class Monster : ITarget
     {
         this.name = name;
         this.maxHealth = maxHealth;
+        this.currentHealth = maxHealth;
         this.BaseAttack = baseAttack;
         this.Resistances = resistances ?? []; 
     } 
@@ -61,7 +62,7 @@ public class Monster : ITarget
     }
     public int BaseAttack;
     public int attack { get; set; } = 10;
-    public bool IsAlive = false;
+    public bool IsAlive = true;
     public bool isFrozen { get; set; } = false;
     public List<string> Resistances = [];
 
