@@ -46,6 +46,7 @@ public class Monster : ITarget
         this.maxHealth = maxHealth;
         this.currentHealth = maxHealth;
         this.BaseAttack = baseAttack;
+        this.attack = baseAttack;
         this.Resistances = resistances ?? []; 
     } 
     public string name { get; set; }
