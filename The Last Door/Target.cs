@@ -46,6 +46,7 @@ public class Monster : ITarget
         this.maxHealth = maxHealth;
         this.currentHealth = maxHealth;
         this.BaseAttack = baseAttack;
+        this.attack = baseAttack;
         this.Resistances = resistances ?? []; 
     } 
     public string name { get; set; }
@@ -61,7 +62,7 @@ public class Monster : ITarget
         }
     }
     public int BaseAttack;
-    public int attack { get; set; } = 10;
+    public int attack { get; set; }
     public bool IsAlive = true;
     public bool isFrozen { get; set; } = false;
     public List<string> Resistances = [];

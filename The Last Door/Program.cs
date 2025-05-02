@@ -47,7 +47,7 @@ class Program
         }
 
         // Если цикл завершился, то игра закончена
-        Console.WriteLine("Вы победили!");
+        Console.WriteLine("\nВы победили!");
         game.GameOver();
     }
 }
